@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="../public/css/login.css">
+</head>
+
+<style>
+  .login-container {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    background-color: #40E0D0;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  .login-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    align-items: center;
+  }
+
+  .form-login {
+    width: 30%;
+    background-color: wheat;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+  }
+
+  input {
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid rgb(201, 199, 199);
+    padding-left: 10px;
+  }
+
+  .login-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  button {
+    background-color: red;
+    width: 100px;
+    height: 40px;
+    border: 1px solid rgb(184, 183, 183);
+    border-radius: 8px;
+    font-family: 600;
+  }
+</style>
+
+<body>
+
+
+  <div class="login-container">
+    <h1>Login</h1>
+    <div class="login-content">
+      <form action="/auth" method="POST" class="form-login">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+          <% if (typeof error !=='undefined' && error) { %>
+            <div style="color: red;">
+              <%= error %>
+            </div>
+            <% } %>
+        <div class="login-button">
+          <button type="submit">Đăng nhập</button>
+        </div>
+      </form>
+      <a href="/register">Create new account</a>
+    </div>
+  </div>
+</body>
+
+</html>
