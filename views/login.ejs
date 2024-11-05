@@ -5,82 +5,116 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <link rel="stylesheet" href="../public/css/login.css">
 </head>
 
 <style>
-  .login-container {
-    width: 100%;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    background-color: #40E0D0;
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    /* Đặt chiều cao của body bằng với chiều cao của viewport */
   }
 
-  h1 {
-    text-align: center;
+  .login-container {
+    background-color: rgb(31, 196, 247);
+    display: flex;
+    justify-content: center;
+    /* Căn giữa theo chiều ngang */
+    align-items: center;
+    /* Căn giữa theo chiều dọc */
+    width: 100%;
+    height: 100vh;
+    /* Đặt chiều cao của login-container bằng với chiều cao của viewport */
   }
 
   .login-content {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: 16px;
+    background-color: rgb(255, 255, 255);
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    max-width: 400px;
+    /* Đặt chiều rộng tối đa cho login-content */
     width: 100%;
+    /* Đặt chiều rộng bằng 100% để nó không vượt quá chiều rộng của container */
     align-items: center;
   }
 
   .form-login {
-    width: 30%;
-    background-color: wheat;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 16px;
+    width: 100%;
+    gap: 12px;
   }
 
   input {
     height: 40px;
-    border-radius: 8px;
-    border: 1px solid rgb(201, 199, 199);
+    width: 300px;
     padding-left: 10px;
+    border-radius: 10px;
+    border: 1px solid rgb(165, 162, 162);
   }
 
   .login-button {
+    width: 100%;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
   }
 
   button {
-    background-color: red;
-    width: 100px;
     height: 40px;
-    border: 1px solid rgb(184, 183, 183);
-    border-radius: 8px;
-    font-family: 600;
+    padding: 15px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: none;
+    background-color: rgb(9, 175, 226);
+    font-weight: 600;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .create-register {
+    margin-top: 16px;
+  }
+
+  a {
+    text-decoration: none;
+    color: rgb(8, 164, 192);
+  }
+
+  h1 {
+    font-weight: 600;
   }
 </style>
 
 <body>
-
-
   <div class="login-container">
-    <h1>Login</h1>
     <div class="login-content">
-      <form action="/auth" method="POST" class="form-login">
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
+      <h1>Đăng nhập</h1>
+      <div>
+        <form action="/auth" method="POST" class="form-login">
+          <input type="email" name="email" placeholder="Email" required>
+          <input type="password" name="password" placeholder="Password" required>
           <% if (typeof error !=='undefined' && error) { %>
             <div style="color: red;">
               <%= error %>
             </div>
             <% } %>
-        <div class="login-button">
-          <button type="submit">Đăng nhập</button>
+              <div class="login-button">
+                <button type="submit">Đăng nhập</button>
+              </div>
+        </form>
+        <div class="create-register">
+          Bạn chưa có tài khoản? <a class="" href="/register">Create new account</a>
         </div>
-      </form>
-      <a href="/register">Create new account</a>
+      </div>
     </div>
   </div>
 </body>
