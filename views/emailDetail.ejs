@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email Detail</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .email-container {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .sender {
+      font-weight: bold;
+    }
+    .message {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <h1>Chi tiết email</h1>
+    <p class="sender">Người gửi: <%= email.sender_name %></p>
+    <p>Chủ đề: <%= email.subject %></p>
+    <p>Thời gian: <%= email.sent_at %></p>
+    <div class="message">
+      <p>Nội dung:</p>
+      <p><%= email.message %></p>
+    </div>
+    <button onclick="location.href='/inbox'">Trở lại Hộp thư đến</button>
+  </div>
+</body>
+</html>

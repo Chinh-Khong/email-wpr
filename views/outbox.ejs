@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Inbox</title>
+  <title>Outbox</title>
   <style>
     body {
       margin: 0;
@@ -63,21 +63,6 @@
       background-color: rgb(226, 204, 204);
     }
 
-    .pagination {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
-    .pagination a {
-      margin: 0 10px;
-      text-decoration: none;
-      color: #007BFF;
-    }
-
-    .pagination span {
-      margin: 0 10px;
-    }
     .button-delete {
       display: flex;
       flex-direction: row;
@@ -92,6 +77,12 @@
       color: white;
       cursor: pointer;
     }
+    .pagination {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      margin-top: 10px;
+    }
   </style>
 </head>
 
@@ -99,13 +90,14 @@
   <div class="inbox-container">
     <div class="inbox-content">
       <div class="nav-bar">
-        <p class="menu-items">Xin chào: <%= userName %></p>
+        <p class="menu-items">Xin chào: <%= userName %>
+        </p>
         <p class="menu-items" onclick="location.href='/compose'">Compose</p>
-        <p class="menu-items" onclick="location.href='/outbox'">Hộp thư đi</p>
+        <p class="menu-items" onclick="location.href='/inbox'">Hộp thư đến</p>
         <p class="menu-items" onclick="location.href='/logout'">Đăng xuất</p>
       </div>
       <hr>
-      <h1>Hộp thư đến</h1>
+      <h1>Hộp thư đi</h1>
       <div class="button-delete">
         <button id="delete-emails">Xóa đã chọn</button>
       </div>
@@ -113,20 +105,21 @@
         <thead>
           <tr>
             <th>Chọn</th>
-            <th>Người gửi</th>
+            <th>Người nhận</th>
             <th>Chủ đề</th>
             <th>Thời gian</th>
           </tr>
         </thead>
         <tbody>
-          <% if (receivedEmails && receivedEmails.length > 0) { %>
-            <% receivedEmails.forEach(email => { %>
+          <% if (sentEmails && sentEmails.length> 0) { %>
+            <% sentEmails.forEach(email=> { %>
               <tr onclick="location.href='/email/<%= email.id %>'" style="cursor: pointer;">
                 <td>
-                  <input type="checkbox" class="email-checkbox" data-id="<%= email.id %>" onclick="event.stopPropagation()">
+                  <input type="checkbox" class="email-checkbox" data-id="<%= email.id %>"
+                    onclick="event.stopPropagation()">
                 </td>
                 <td>
-                  <%= email.sender_name %>
+                  <%= email.receiver_name %>
                 </td>
                 <td>
                   <%= email.subject %>
@@ -135,30 +128,28 @@
                   <%= new Date(email.sent_at).toLocaleDateString('en-GB') %>
                 </td>
               </tr>
-            <% }) %>
-          <% } else { %>
-            <tr>
-              <td colspan="3">Không có email nào nhận.</td>
-            </tr>
-          <% } %>
+              <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="4">Không có email nào đã gửi.</td>
+                  </tr>
+                  <% } %>
         </tbody>
       </table>
-
-      <!-- Phân trang -->
+      <!-- Pagination -->
       <div class="pagination">
-        <% if (currentPage > 1) { %>
-          <a href="/inbox?page=<%= currentPage - 1 %>">Trước</a>
-        <% } %>
-        
-        <span>Trang <%= currentPage %> / <%= totalPages %></span>
-        
-        <% if (currentPage < totalPages) { %>
-          <a href="/inbox?page=<%= currentPage + 1 %>">Tiếp theo</a>
-        <% } %>
+        <% if (currentPage> 1) { %>
+          <a href="/outbox?page=<%= currentPage - 1 %>">Trước</a>
+          <% } %>
+
+            <span>Trang <%= currentPage %> / <%= totalPages %></span>
+
+            <% if (currentPage < totalPages) { %>
+              <a href="/outbox?page=<%= currentPage + 1 %>">Tiếp theo</a>
+              <% } %>
       </div>
     </div>
   </div>
-
   <script>
     document.getElementById('delete-emails').addEventListener('click', async () => {
       const checkboxes = document.querySelectorAll('.email-checkbox:checked');
@@ -173,7 +164,7 @@
         try {
           // Tạo các yêu cầu xóa email đã chọn
           const deleteRequests = emailIds.map(id =>
-            fetch(`/api/emails/receiver/${id}`, { method: 'DELETE' })
+            fetch(`/api/emails/sender/${id}`, { method: 'DELETE' })
           );
 
           // Chờ tất cả các yêu cầu xóa hoàn thành
@@ -195,4 +186,5 @@
   </script>
 
 </body>
+
 </html>
