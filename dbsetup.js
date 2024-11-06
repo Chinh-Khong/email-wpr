@@ -29,6 +29,7 @@ const mysql = require('mysql2/promise');
             sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             status_sender INT,
             status_receiver INT,
+            attachment VARCHAR(512) NULL,
             FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
         );

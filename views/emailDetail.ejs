@@ -109,9 +109,12 @@
                 <%= email.message %>
               </p>
             </div>
-            <div>Tải xuống tập tin 
-              <a href="/<%= email.attachment %>">Download Attachment</a>
-            </div>
+            <% if (email.attachment) { %>
+              <div>
+                Tải xuống tập tin 
+                <a href="/<%= email.attachment %>">Download Attachment</a>
+              </div>
+            <% } %>
             <button onclick="location.href='/inbox'">Trở lại Hộp thư đến</button>
           </div>
         </div>
