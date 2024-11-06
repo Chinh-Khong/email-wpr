@@ -1,11 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soạn thư mới</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+    }
+
+    .nav-bar {
+      background-color: rgb(255, 255, 255);
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 20px;
+    }
+
+    .menu-items {
+      font-weight: 500;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .compose-container {
+      width: 100%;
+      background-color: rgb(31, 196, 247);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .compose-content {
+      width: 1200px;
+      background-color: white;
+      padding: 16px;
+      height: 700px;
+      border-radius: 10px;
+    }
+
+    .compose-items {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-text {
+      height: 40px;
+      width: 300px;
+      padding-left: 10px;
+      border-radius: 10px;
+      border: 1px solid rgb(165, 162, 162);
+    }
+
+    button {
+      height: 40px;
+      padding: 15px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      border: none;
+      background-color: rgb(9, 175, 226);
+      font-weight: 600;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    form {
+      width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .select-input {
+      height: 40px;
+      width: 313px;
+      padding-left: 10px;
+      border-radius: 10px;
+      border: 1px solid rgb(165, 162, 162);
+    }
+
+    .aaaa {
+      width: 100px;
+    }
+
+    .input-nd {
+      height: 70px;
+      width: 500px;
+      border-radius: 10px;
+      border: 1px solid rgb(165, 162, 162);
+    }
+
+    .layout-content {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .item-menu:hover {
+      color: rgb(31, 196, 247);
+      cursor: pointer;
+    }
+  </style>
 </head>
+
 <body>
-    <h1>Soạn tin nhắn</h1>
+  <div class="compose-container">
+    <div class="compose-content">
+      <div class="nav-bar">
+        <p class="menu-items">Xin chào: <%= userName %></p>
+        <p class="menu-items" onclick="location.href='/logout'">Đăng xuất</p>
+      </div>
+      <hr>
+      <div class="layout-content">
+        <div
+          style="margin-top: 10px; width: 15%; display: flex; flex-direction: column; align-items: center; border: 1px solid rgb(211, 205, 205); border-radius: 10px; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; height: 220px;">
+          <h3>Danh mục</h3>
+          <p class="item-menu" onclick="location.href='/compose'">Soạn tin nhắn</p>
+          <p class="item-menu" onclick="location.href='/inbox'">Hộp thư đến</p>
+          <p class="item-menu" onclick="location.href='/outbox'">Hộp thư đi</p>
+        </div>
+
+        <div style="width: 75%;">
+          <div class="compose-items">
+            <h1>Soạn thư mới</h1>
+            <form action="/email/compose" id="composeForm" method="post" enctype="multipart/form-data">
+              <label for="receiverEmail">Người nhận:</label>
+              <select class="select-input" id="receiverEmail" name="receiverEmail">
+                <option value="">Chọn người nhận</option>
+                <% users.forEach(user=> { %>
+                  <option value="<%= user.email %>">
+                    <%= user.email %>
+                  </option>
+                  <% }); %>
+              </select>
+              <br />
+
+              <label for="subject">Chủ đề:</label>
+              <input class="input-text" type="text" id="subject" name="subject" required>
+              <br />
+
+              <label for="content">Nội dung:</label>
+              <textarea class="input-nd" id="content" name="content" required></textarea>
+              <br />
+
+              <label for="attachment">Tệp đính kèm:</label>
+              <input class="aaaa" type="file" id="attachment" name="attachment">
+              <br />
+              <div>
+                <% if (error) { %>
+                  <p style="color: red;">
+                    <%= error %>
+                  </p>
+                  <% } %>
+              </div>
+              <button type="submit">Gửi</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
+
 </html>

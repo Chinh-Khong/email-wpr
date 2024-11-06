@@ -5,7 +5,7 @@ const db = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'wpr2201040111',
+    database: 'wpr2201040123',
 });
 
 // Kiểm tra kết nối

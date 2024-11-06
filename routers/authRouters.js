@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const database = require("../db");
 router.get('/login', (req, res) => {
-  res.render('login'); 
+  res.render('login');
 });
 // Handle login
 router.post('/auth', async (req, res) => {
@@ -17,14 +17,14 @@ router.post('/auth', async (req, res) => {
         req.session.fullName = user.full_name;
         return res.redirect('/inbox');
       } else {
-        res.render('login', { error: 'Sai email hoặc mật khẩu' });
+        res.render('login', { error: 'Sai email hoặc mật khẩu!' });
       }
     } else {
-      res.render('login', { error: 'Sai email hoặc mật khẩu' });
+      res.render('login', { error: 'Sai email hoặc mật khẩu!' });
     }
   } catch (err) {
     console.error(err);
-    res.status(500).render('login', { error: 'Lỗi server' });
+    res.status(500).render('login', { error: 'Lỗi hệ thống!' });
   }
 });
 // Registration page
@@ -40,11 +40,11 @@ router.post('/auth/register', async (req, res) => {
   if (full_name && password && confirm_password && email) {
     //pass phải lớn hơn 6 ký tự
     if (password.length < 6) {
-      return res.render('register', { 
-        message: 'Mật khẩu phải dài hơn 6 ký tự!', 
-        messageType: 'error', 
-        full_name, 
-        email 
+      return res.render('register', {
+        message: 'Mật khẩu phải dài hơn 6 ký tự!',
+        messageType: 'error',
+        full_name,
+        email
       });
     }
 
@@ -92,12 +92,14 @@ router.post('/auth/register', async (req, res) => {
   }
 });
 
+
+
 // Handle logout
 router.get('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
       console.error(err);
-      return res.status(500).render('login', { error: 'Lỗi server' });
+      return res.status(500).render('login', { error: 'Lỗi hệ thống!' });
     }
     res.redirect('/login');
   });

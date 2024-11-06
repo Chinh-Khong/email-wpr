@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Email Detail</title>
@@ -7,37 +8,115 @@
     body {
       margin: 0;
       padding: 20px;
-      font-family: Arial, sans-serif;
     }
+
     .email-container {
-      border: 1px solid #ccc;
       padding: 20px;
       border-radius: 10px;
-      background-color: #f9f9f9;
     }
+
     h1 {
       margin: 0;
       font-size: 24px;
     }
+
     .sender {
       font-weight: bold;
     }
+
     .message {
       margin-top: 20px;
     }
+    .compose-container {
+      width: 100%;
+      background-color: rgb(31, 196, 247);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .compose-content {
+      width: 1200px;
+      background-color: white;
+      padding: 16px;
+      height: 700px;
+      border-radius: 10px;
+    }
+    .nav-bar {
+      background-color: rgb(255, 255, 255);
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 20px;
+    }
+    .layout-content {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .item-menu:hover {
+      color: rgb(31, 196, 247);
+      cursor: pointer;
+    }
+    button {
+      height: 40px;
+      padding: 15px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      border: none;
+      background-color: rgb(9, 175, 226);
+      font-weight: 600;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
   </style>
 </head>
+
 <body>
-  <div class="email-container">
-    <h1>Chi tiết email</h1>
-    <p class="sender">Người gửi: <%= email.sender_name %></p>
-    <p>Chủ đề: <%= email.subject %></p>
-    <p>Thời gian: <%= email.sent_at %></p>
-    <div class="message">
-      <p>Nội dung:</p>
-      <p><%= email.message %></p>
+  <div class="compose-container">
+    <div class="compose-content">
+      <div class="nav-bar">
+        <p class="menu-items">Xin chào: <%= userName %>
+        </p>
+        <p class="menu-items" onclick="location.href='/logout'">Đăng xuất</p>
+      </div>
+      <hr>
+      <div class="layout-content">
+        <div
+          style="margin-top: 10px; width: 15%; display: flex; flex-direction: column; align-items: center; border: 1px solid rgb(211, 205, 205); border-radius: 10px; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; height: 220px;">
+          <h3>Danh mục</h3>
+          <p class="item-menu" onclick="location.href='/compose'">Soạn tin nhắn</p>
+          <p class="item-menu" onclick="location.href='/inbox'">Hộp thư đến</p>
+          <p class="item-menu" onclick="location.href='/outbox'">Hộp thư đi</p>
+        </div>
+        <div style="width: 75%;">
+          <div class="email-container">
+            <h1>Chi tiết email</h1>
+            <p class="sender">Người gửi: <%= email.sender_name %>
+            </p>
+            <p>Chủ đề: <%= email.subject %>
+            </p>
+            <p>Thời gian: <%= new Date(email.sent_at).toLocaleDateString('en-GB') %>
+            </p>
+            <div class="message">
+              <p>Nội dung:</p>
+              <p>
+                <%= email.message %>
+              </p>
+            </div>
+            <div>Tải xuống tập tin 
+              <a href="/<%= email.attachment %>">Download Attachment</a>
+            </div>
+            <button onclick="location.href='/inbox'">Trở lại Hộp thư đến</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <button onclick="location.href='/inbox'">Trở lại Hộp thư đến</button>
   </div>
 </body>
 </html>

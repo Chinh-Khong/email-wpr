@@ -5,8 +5,8 @@ const session = require('express-session'); // Import express-session
 const path = require('path');
 const authRoutes = require('./routers/authRouters');
 const emailRoutes = require('./routers/emailRouters');
-
 const app = express();
+app.use('/uploads', express.static('uploads'));
 
 app.use(express.static('public'));
 

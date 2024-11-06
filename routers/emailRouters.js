@@ -2,10 +2,19 @@
 const express = require('express');
 const router = express.Router();
 const database = require("../db");
-// // Trang soạn thư
-// router.get('/compose', (req, res) => {
-//     res.render('compose');
-// });
+const multer = require('multer');
+const path = require('path');
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads'); // Folder where files will be stored
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
+  }
+});
+const upload = multer({ storage: storage });
 
 //router inbox
 router.get('/inbox', async (req, res) => {
@@ -30,7 +39,7 @@ router.get('/inbox', async (req, res) => {
         SELECT emails.*, users.full_name AS sender_name
         FROM emails
         JOIN users ON emails.sender_id = users.id
-        WHERE receiver_id = ?
+        WHERE receiver_id = ? AND status_receiver = 1
         LIMIT ? OFFSET ?
       `;
     const [receivedEmails] = await database.query(receivedEmailsQuery, [userId, limit, offset]);
@@ -43,7 +52,7 @@ router.get('/inbox', async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).render('inbox', { error: 'Lỗi server' });
+    res.status(500).render('inbox', { error: 'Lỗi server!' });
   }
 });
 
@@ -68,7 +77,7 @@ router.get('/outbox', async (req, res) => {
       SELECT emails.*, users.full_name AS receiver_name
       FROM emails
       JOIN users ON emails.receiver_id = users.id
-      WHERE sender_id = ?
+      WHERE sender_id = ? AND status_sender = 1
       LIMIT ? OFFSET ?`;
     const [sentEmails] = await database.query(sentEmailsQuery, [userId, limit, offset]);
 
@@ -80,13 +89,14 @@ router.get('/outbox', async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).render('outbox', { error: 'Lỗi server' });
+    res.status(500).render('outbox', { error: 'Lỗi server!' });
   }
 });
 
 //router detail email
 router.get('/email/:id', async (req, res) => {
   const emailId = req.params.id;
+  const userName = req.session.fullName;
   try {
     // Fetch email details by ID
     const emailDetailQuery = `
@@ -99,13 +109,13 @@ router.get('/email/:id', async (req, res) => {
 
     if (email.length > 0) {
       // Render the email detail page with email data
-      res.render('emailDetail', { email: email[0] });
+      res.render('emailDetail', { email: email[0], userName });
     } else {
-      res.status(404).send('Email not found');
+      res.status(404).send('Không tìm thấy email!');
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send('Lỗi server');
+    res.status(500).send('Lỗi server!');
   }
 });
 
@@ -114,7 +124,7 @@ router.get('/email/:id', async (req, res) => {
 router.delete('/api/emails/sender/:id', async (req, res) => {
   // Ensure the user is logged in
   if (!req.session.userId) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return res.status(401).json({ message: 'Vui lòng hãy đăng nhập tài khoản' });
   }
 
   const userId = req.session.userId;
@@ -126,25 +136,22 @@ router.delete('/api/emails/sender/:id', async (req, res) => {
     const [[email]] = await database.query(checkEmailQuery, [emailId, userId]);
 
     if (!email) {
-      return res.status(404).json({ message: 'Email not found or not authorized to delete' });
+      return res.status(404).json({ message: 'Không tìm thấy email!' });
     }
+    const updateEmailQuery = `UPDATE emails SET status_sender = 0 WHERE id = ?`;
+    await database.query(updateEmailQuery, [emailId]);
 
-    // Delete the email
-    const deleteEmailQuery = `DELETE FROM emails WHERE id = ?`;
-    await database.query(deleteEmailQuery, [emailId]);
-
-    res.status(200).json({ message: 'Emails deleted successfully' });
+    res.status(200).json({ message: 'Xóa hội thoại thành công!' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Lỗi server!' });
   }
 });
-
 
 router.delete('/api/emails/receiver/:id', async (req, res) => {
   // Ensure the user is logged in
   if (!req.session.userId) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return res.status(401).json({ message: 'Vui lòng hãy đăng nhập tài khoản!' });
   }
 
   const userId = req.session.userId;
@@ -154,21 +161,74 @@ router.delete('/api/emails/receiver/:id', async (req, res) => {
     // Check if the email belongs to the logged-in user
     const checkEmailQuery = `SELECT * FROM emails WHERE id = ? AND receiver_id = ?`;
     const [[email]] = await database.query(checkEmailQuery, [emailId, userId]);
-
     if (!email) {
       return res.status(404).json({ message: 'Email not found or not authorized to delete' });
     }
-
-    // Delete the email
-    const deleteEmailQuery = `DELETE FROM emails WHERE id = ?`;
-    await database.query(deleteEmailQuery, [emailId]);
-
-    res.status(200).json({ message: 'Emails deleted successfully' });
+    //update status_receiver
+    const updateEmailQuery = 'UPDATE emails SET status_receiver = 0 WHERE id = ?'
+    await database.query(updateEmailQuery, [emailId]);
+    //
+    res.status(200).json({ message: 'Xóa hội thoại thành công!' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Lỗi server!' });
   }
 });
 
+//compose
+// GET route for composing email
+router.get('/compose', async (req, res) => {
+  const userName = req.session.fullName;
+
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+
+  try {
+    const [users] = await database.query('SELECT email FROM users');
+    res.render('compose', { users, error: null, userName });
+  } catch (error) {
+    console.error(error);
+    res.render('compose', { users: [], error: 'Lỗi server! khi tải danh sách người dùng', userName });
+  }
+});
+
+// POST route to compose and send email with file upload
+router.post('/email/compose', upload.single('attachment'), async (req, res) => {
+  const userName = req.session.fullName;
+  if (!req.session.userId) {
+    return res.render('compose', { users, error: 'Vui lòng hãy đăng nhập tài khoản', userName });
+  }
+  const [users] = await database.query('SELECT email FROM users');
+  const { receiverEmail, subject, content } = req.body;
+  const senderId = req.session.userId;
+
+  if (!receiverEmail) {
+    return res.render('compose', { users, error: 'Vui lòng chọn người nhận', userName });
+  }
+
+  try {
+    const checkUserQuery = 'SELECT id FROM users WHERE email = ?';
+    const [[receiver]] = await database.query(checkUserQuery, [receiverEmail]);
+
+    if (!receiver) {
+      return res.render('compose', { users, error: 'Người nhận không tồn tại', userName });
+    }
+
+    const receiverId = receiver.id;
+    const attachmentPath = req.file ? req.file.path : null; // Path to uploaded file
+
+    const insertEmailQuery = `
+      INSERT INTO emails (sender_id, receiver_id, subject, message, sent_at, status_sender, status_receiver, attachment)
+      VALUES (?, ?, ?, ?, NOW(), 1, 1, ?)
+    `;
+    await database.query(insertEmailQuery, [senderId, receiverId, subject, content, attachmentPath]);
+
+    return res.redirect('/outbox');
+  } catch (err) {
+    console.error(err);
+    res.render('compose', { users, error: 'Lỗi server! Không thể gửi thư', userName });
+  }
+});
 
 module.exports = router;

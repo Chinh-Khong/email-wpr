@@ -68,6 +68,7 @@
       flex-direction: row;
       justify-content: flex-end;
     }
+
     #delete-emails {
       background-color: red;
       padding: 8px 10px;
@@ -77,11 +78,22 @@
       color: white;
       cursor: pointer;
     }
+
     .pagination {
       display: flex;
       flex-direction: row;
       justify-content: center;
       margin-top: 10px;
+    }
+    .layout-content {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .item-menu:hover {
+      color: rgb(31, 196, 247);
+      cursor: pointer;
     }
   </style>
 </head>
@@ -90,63 +102,71 @@
   <div class="inbox-container">
     <div class="inbox-content">
       <div class="nav-bar">
-        <p class="menu-items">Xin chào: <%= userName %>
-        </p>
-        <p class="menu-items" onclick="location.href='/compose'">Compose</p>
-        <p class="menu-items" onclick="location.href='/inbox'">Hộp thư đến</p>
+        <p class="menu-items">Xin chào: <%= userName %></p>
         <p class="menu-items" onclick="location.href='/logout'">Đăng xuất</p>
       </div>
       <hr>
-      <h1>Hộp thư đi</h1>
-      <div class="button-delete">
-        <button id="delete-emails">Xóa đã chọn</button>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Chọn</th>
-            <th>Người nhận</th>
-            <th>Chủ đề</th>
-            <th>Thời gian</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if (sentEmails && sentEmails.length> 0) { %>
-            <% sentEmails.forEach(email=> { %>
-              <tr onclick="location.href='/email/<%= email.id %>'" style="cursor: pointer;">
-                <td>
-                  <input type="checkbox" class="email-checkbox" data-id="<%= email.id %>"
-                    onclick="event.stopPropagation()">
-                </td>
-                <td>
-                  <%= email.receiver_name %>
-                </td>
-                <td>
-                  <%= email.subject %>
-                </td>
-                <td>
-                  <%= new Date(email.sent_at).toLocaleDateString('en-GB') %>
-                </td>
+      <div class="layout-content">
+        <div style="margin-top: 10px; width: 15%; display: flex; flex-direction: column; align-items: center; border: 1px solid rgb(211, 205, 205); border-radius: 10px; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; height: 220px;">
+          <h3>Danh mục</h3>
+          <p class="item-menu" onclick="location.href='/compose'">Soạn tin nhắn</p>
+          <p class="item-menu" onclick="location.href='/inbox'">Hộp thư đến</p>
+          <p class="item-menu" onclick="location.href='/outbox'">Hộp thư đi</p>
+        </div>
+
+        <div style="width: 75%;">
+          <h1>Hộp thư đi</h1>
+          <div class="button-delete">
+            <button id="delete-emails">Xóa đã chọn</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Chọn</th>
+                <th>Người nhận</th>
+                <th>Chủ đề</th>
+                <th>Thời gian</th>
               </tr>
-              <% }) %>
-                <% } else { %>
-                  <tr>
-                    <td colspan="4">Không có email nào đã gửi.</td>
+            </thead>
+            <tbody>
+              <% if (sentEmails && sentEmails.length> 0) { %>
+                <% sentEmails.forEach(email=> { %>
+                  <tr onclick="location.href='/email/<%= email.id %>'" style="cursor: pointer;">
+                    <td>
+                      <input type="checkbox" class="email-checkbox" data-id="<%= email.id %>"
+                        onclick="event.stopPropagation()">
+                    </td>
+                    <td>
+                      <%= email.receiver_name %>
+                    </td>
+                    <td>
+                      <%= email.subject %>
+                    </td>
+                    <td>
+                      <%= new Date(email.sent_at).toLocaleDateString('en-GB') %>
+                    </td>
                   </tr>
-                  <% } %>
-        </tbody>
-      </table>
-      <!-- Pagination -->
-      <div class="pagination">
-        <% if (currentPage> 1) { %>
-          <a href="/outbox?page=<%= currentPage - 1 %>">Trước</a>
-          <% } %>
-
-            <span>Trang <%= currentPage %> / <%= totalPages %></span>
-
-            <% if (currentPage < totalPages) { %>
-              <a href="/outbox?page=<%= currentPage + 1 %>">Tiếp theo</a>
+                  <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="4">Không có email nào đã gửi.</td>
+                      </tr>
+                      <% } %>
+            </tbody>
+          </table>
+          <!-- Pagination -->
+          <div class="pagination">
+            <% if (currentPage> 1) { %>
+              <a href="/outbox?page=<%= currentPage - 1 %>">Trước</a>
               <% } %>
+    
+                <span>Trang <%= currentPage %> / <%= totalPages %></span>
+    
+                <% if (currentPage < totalPages) { %>
+                  <a href="/outbox?page=<%= currentPage + 1 %>">Tiếp theo</a>
+                  <% } %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
