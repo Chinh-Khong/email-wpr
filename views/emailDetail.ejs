@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <title>Email Detail</title>
+  <title>Chi tiết Email</title>
   <style>
     body {
       margin: 0;
@@ -74,6 +73,9 @@
       font-size: 14px;
       cursor: pointer;
     }
+    span {
+      font-weight: 600;
+    }
   </style>
 </head>
 
@@ -99,23 +101,23 @@
             <h1>Chi tiết email</h1>
             <p class="sender">Người gửi: <%= email.sender_name %>
             </p>
-            <p>Chủ đề: <%= email.subject %>
+            <p><span>Chủ đề:</span> <%= email.subject %>
             </p>
-            <p>Thời gian: <%= new Date(email.sent_at).toLocaleDateString('en-GB') %>
+            <p><span>Thời gian:</span> <%= new Date(email.sent_at).toLocaleDateString('en-GB') %>
             </p>
             <div class="message">
-              <p>Nội dung:</p>
+              <span>Nội dung:</span>
               <p>
                 <%= email.message %>
               </p>
             </div>
             <% if (email.attachment) { %>
               <div>
-                Tải xuống tập tin 
-                <a href="/<%= email.attachment %>">Download Attachment</a>
+                <span> Tải xuống tập tin</span> 
+                <a style="margin-left: 5px;" href="/<%= email.attachment %>">Tải tệp tin</a>
               </div>
             <% } %>
-            <button onclick="location.href='/inbox'">Trở lại Hộp thư đến</button>
+            <button style="margin-top: 10px;" onclick="location.href='/inbox'">Trở lại Hộp thư đến</button>
           </div>
         </div>
       </div>

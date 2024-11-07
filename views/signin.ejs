@@ -1,33 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Đăng nhập</title>
 </head>
-
 <style>
   body {
     margin: 0;
     padding: 0;
     height: 100vh;
-    /* Đặt chiều cao của body bằng với chiều cao của viewport */
   }
 
-  .login-container {
+  .signin-container {
     background-color: rgb(31, 196, 247);
     display: flex;
     justify-content: center;
-    /* Căn giữa theo chiều ngang */
     align-items: center;
-    /* Căn giữa theo chiều dọc */
     width: 100%;
     height: 100vh;
-    /* Đặt chiều cao của login-container bằng với chiều cao của viewport */
   }
 
-  .login-content {
+  .signin-content {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -36,13 +30,11 @@
     border-radius: 10px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     max-width: 400px;
-    /* Đặt chiều rộng tối đa cho login-content */
     width: 100%;
-    /* Đặt chiều rộng bằng 100% để nó không vượt quá chiều rộng của container */
     align-items: center;
   }
 
-  .form-login {
+  .form-signin {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -57,7 +49,7 @@
     border: 1px solid rgb(165, 162, 162);
   }
 
-  .login-button {
+  .signin-button {
     width: 100%;
     display: flex;
     align-items: center;
@@ -80,7 +72,7 @@
     cursor: pointer;
   }
 
-  .create-register {
+  .create-signup {
     margin-top: 16px;
   }
 
@@ -95,28 +87,29 @@
 </style>
 
 <body>
-  <div class="login-container">
-    <div class="login-content">
+  <div class="signin-container">
+    <div class="signin-content">
       <h1>Đăng nhập</h1>
       <div>
-        <form action="/auth" method="POST" class="form-login">
-          <input type="email" name="email" placeholder="Email" required>
+        <!-- xử lấy form này thì truyền action với đường link api để xử lý và method -->
+        <form action="/auth" method="POST" class="form-signin">
+          <input type="text" name="email" placeholder="Email" required>
           <input type="password" name="password" placeholder="Password" required>
+          <!-- show lỗi khi dùng ejs -->
           <% if (typeof error !=='undefined' && error) { %>
             <div style="color: red;">
               <%= error %>
             </div>
             <% } %>
-              <div class="login-button">
+              <div class="signin-button">
                 <button type="submit">Đăng nhập</button>
               </div>
         </form>
-        <div class="create-register">
-          Bạn chưa có tài khoản? <a class="" href="/register">Create new account</a>
+        <div class="create-signup">
+          Bạn chưa có tài khoản? <a class="" href="/signup">Create new account</a>
         </div>
       </div>
     </div>
   </div>
 </body>
-
 </html>

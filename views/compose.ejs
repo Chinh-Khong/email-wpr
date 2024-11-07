@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -110,7 +109,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="compose-container">
     <div class="compose-content">
@@ -132,9 +130,9 @@
           <div class="compose-items">
             <h1>Soạn thư mới</h1>
             <form action="/email/compose" id="composeForm" method="post" enctype="multipart/form-data">
-              <label for="receiverEmail">Người nhận:</label>
+              <label for="receiverEmail">Email nhận:</label>
               <select class="select-input" id="receiverEmail" name="receiverEmail">
-                <option value="">Chọn người nhận</option>
+                <option value="">Chọn email nhận</option>
                 <% users.forEach(user=> { %>
                   <option value="<%= user.email %>">
                     <%= user.email %>
@@ -148,11 +146,11 @@
               <br />
 
               <label for="content">Nội dung:</label>
-              <textarea placeholder="Nhập nội dung" class="input-nd" id="content" name="content" required></textarea>
+              <textarea style="padding-left: 10px; padding-top: 5px;" placeholder="Nhập nội dung" class="input-nd" id="content" name="content" required></textarea>
               <br />
 
               <label for="attachment">Tệp đính kèm:</label>
-              <input class="aaaa" type="file" id="attachment" name="attachment">
+              <input class="aaaa" type="file" id="attachment" name="attachment" >
               <br />
               <div>
                 <% if (error) { %>
@@ -169,5 +167,4 @@
     </div>
   </div>
 </body>
-
 </html>

@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1">
-  <title>Register</title>
+  <title>Đăng ký</title>
   <style>
     .message {
       font-weight: bold;
@@ -22,10 +21,9 @@
       margin: 0;
       padding: 0;
       height: 100vh;
-      /* Đặt chiều cao của body bằng với chiều cao của viewport */
     }
 
-    .register {
+    .signup {
       background-color: rgb(31, 196, 247);
       display: flex;
       flex-direction: column;
@@ -35,7 +33,7 @@
       height: 100vh;
     }
 
-    .form-register {
+    .form-signup {
       background-color: white;
       display: flex;
       flex-direction: column;
@@ -43,7 +41,7 @@
       gap: 8px;
     }
 
-    .register-content {
+    .signup-content {
       background-color: white;
       width: 400px;
       border-radius: 10px;
@@ -71,7 +69,7 @@
       cursor: pointer;
     }
 
-    .login {
+    .signin {
       margin-top: 10px;
     }
 
@@ -83,10 +81,10 @@
 </head>
 
 <body>
-  <div class="register">
-    <div class="register-content">
+  <div class="signup">
+    <div class="signup-content">
       <h1>Đăng nhập</h1>
-      <form action="/auth/register" method="post" class="form-register">
+      <form action="/auth/signup" method="post" class="form-signup">
         <label for="full_name"><i class="fas fa-user"></i></label>
         <input type="text" name="full_name" placeholder="Full Name" id="full_name"
           value="<%= typeof full_name !== 'undefined' ? full_name : '' %>" required>
@@ -100,17 +98,15 @@
 
         <label for="confirm_password"><i class="fas fa-lock"></i></label>
         <input type="password" name="confirm_password" placeholder="Confirm Password" id="confirm_password" required>
-        <!-- Hiển thị thông báo -->
         <% if (message) { %>
           <div class="message <%= messageType %>">
             <%= message %>
           </div>
           <% } %>
-            <button type="submit" value="Register">Đăng ký</button>
+            <button type="submit" value="signup">Đăng ký</button>
       </form>
-      <div class="login">
-        Bạn đã có tài khoản ? <a class="" href="/login">Đăng nhập</a>
-
+      <div class="signin">
+        Bạn đã có tài khoản ? <a class="" href="/signin">Đăng nhập</a>
       </div>
     </div>
   </div>

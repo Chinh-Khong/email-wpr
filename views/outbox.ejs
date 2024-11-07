@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Outbox</title>
+  <title>Hộp thư đi</title>
   <style>
     body {
       margin: 0;
@@ -79,21 +79,45 @@
       cursor: pointer;
     }
 
-    .pagination {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      margin-top: 10px;
-    }
+
     .layout-content {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       gap: 24px;
     }
+
     .item-menu:hover {
       color: rgb(31, 196, 247);
       cursor: pointer;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .page-link {
+      padding: 8px 12px;
+      color: #333;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .page-link.current {
+      font-weight: bold;
+      color: rgb(31, 196, 247);
+    }
+
+    .page-link:hover {
+      background-color: rgb(200, 200, 200);
+    }
+
+    .ellipsis {
+      padding: 8px 12px;
+      color: #333;
     }
   </style>
 </head>
@@ -102,12 +126,14 @@
   <div class="inbox-container">
     <div class="inbox-content">
       <div class="nav-bar">
-        <p class="menu-items">Xin chào: <%= userName %></p>
+        <p class="menu-items">Xin chào: <%= userName %>
+        </p>
         <p class="menu-items" onclick="location.href='/logout'">Đăng xuất</p>
       </div>
       <hr>
       <div class="layout-content">
-        <div style="margin-top: 10px; width: 15%; display: flex; flex-direction: column; align-items: center; border: 1px solid rgb(211, 205, 205); border-radius: 10px; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; height: 220px;">
+        <div
+          style="margin-top: 10px; width: 15%; display: flex; flex-direction: column; align-items: center; border: 1px solid rgb(211, 205, 205); border-radius: 10px; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; height: 220px;">
           <h3>Danh mục</h3>
           <p class="item-menu" onclick="location.href='/compose'">Soạn tin nhắn</p>
           <p class="item-menu" onclick="location.href='/inbox'">Hộp thư đến</p>
@@ -154,17 +180,36 @@
                       <% } %>
             </tbody>
           </table>
-          <!-- Pagination -->
+          <!-- Phân trang -->
           <div class="pagination">
-            <% if (currentPage> 1) { %>
-              <a href="/outbox?page=<%= currentPage - 1 %>">Trước</a>
+            <% 
+              const maxPagesToShow = 5;
+              const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+              const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+              const adjustedStartPage = Math.max(1, Math.min(startPage, totalPages - maxPagesToShow + 1));
+            %>
+          
+            <% if (adjustedStartPage > 1) { %>
+              <a href="/outbox?page=1" class="page-link">1</a>
+              <% if (adjustedStartPage > 2) { %>
+                <span class="ellipsis">...</span>
               <% } %>
-    
-                <span>Trang <%= currentPage %> / <%= totalPages %></span>
-    
-                <% if (currentPage < totalPages) { %>
-                  <a href="/outbox?page=<%= currentPage + 1 %>">Tiếp theo</a>
-                  <% } %>
+            <% } %>
+          
+            <% for (let i = adjustedStartPage; i <= endPage; i++) { %>
+              <% if (i === currentPage) { %>
+                <span class="page-link current"><strong><%= i %></strong></span>
+              <% } else { %>
+                <a href="/outbox?page=<%= i %>" class="page-link"><%= i %></a>
+              <% } %>
+            <% } %>
+          
+            <% if (endPage < totalPages) { %>
+              <% if (endPage < totalPages - 1) { %>
+                <span class="ellipsis">...</span>
+              <% } %>
+              <a href="/outbox?page=<%= totalPages %>" class="page-link"><%= totalPages %></a>
+            <% } %>
           </div>
         </div>
       </div>

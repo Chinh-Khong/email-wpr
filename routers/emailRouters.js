@@ -1,40 +1,43 @@
-// routes/emailRoutes.js
+//emailRoutes.js
 const express = require('express');
 const router = express.Router();
 const database = require("../db");
 const multer = require('multer');
 const path = require('path');
 
-// Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads'); // Folder where files will be stored
+    cb(null, 'uploads');
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
+    cb(null, Date.now() + path.extname(file.originalname));
   }
 });
 const upload = multer({ storage: storage });
 
-//router inbox
+router.get('/denied', async (req, res) => {
+  return res.render('denied');
+})
+
+//api get inbox
 router.get('/inbox', async (req, res) => {
+  //kiểm tra xem bạn đã đăng nhập hay chưa , nếu chưa thì show trang denied
   if (!req.session.userId) {
-    return res.redirect('/login');
+    return res.status(403).render('denied', { message: 'Vui lòng đăng nhập' });
   }
 
+  //nếu đã đăng nhập thì sẽ show trang inbox , vì trang inbox cần phải có các value (userName,receivedEmails , currentPage , totalPages) nên cần phải lấy value của các field này
   const userId = req.session.userId;
   const userName = req.session.fullName;
-  const page = parseInt(req.query.page) || 1; // Lấy số trang từ query string, mặc định là 1
-  const limit = 5; // Số email trên mỗi trang
-  const offset = (page - 1) * limit; // Tính toán offset
+  const page = parseInt(req.query.page) || 1;
+  const limit = 5;
+  const offset = (page - 1) * limit;
 
   try {
-    // Truy vấn số lượng email để tính số trang
     const countQuery = `SELECT COUNT(*) as count FROM emails WHERE receiver_id = ?`;
     const [[{ count }]] = await database.query(countQuery, [userId]);
     const totalPages = Math.ceil(count / limit);
-
-    // Fetch emails received by the user with pagination
+    // câu query lấy ra những danh sách của hộp thư đến , và thêm điều kiện để show ra các hộp thư này nếu người gửi xóa hộp thư này của họ
     const receivedEmailsQuery = `
         SELECT emails.*, users.full_name AS sender_name
         FROM emails
@@ -42,8 +45,9 @@ router.get('/inbox', async (req, res) => {
         WHERE receiver_id = ? AND status_receiver = 1
         LIMIT ? OFFSET ?
       `;
-    const [receivedEmails] = await database.query(receivedEmailsQuery, [userId, limit, offset]);
 
+    const [receivedEmails] = await database.query(receivedEmailsQuery, [userId, limit, offset]);
+    //nếu đúng chuyển sang trang inbox và truyền các value cần 
     res.render('inbox', {
       userName,
       receivedEmails,
@@ -56,10 +60,10 @@ router.get('/inbox', async (req, res) => {
   }
 });
 
-//router outbox
+//api get outbox
 router.get('/outbox', async (req, res) => {
   if (!req.session.userId) {
-    return res.redirect('/login');
+    return res.status(403).render('denied', { message: 'Vui lòng đăng nhập' });
   }
 
   const userId = req.session.userId;
@@ -93,12 +97,16 @@ router.get('/outbox', async (req, res) => {
   }
 });
 
-//router detail email
+//api get detail email (path params)
 router.get('/email/:id', async (req, res) => {
+  if (!req.session.userId) {
+    return res.status(403).render('denied', { message: 'Vui lòng đăng nhập' });
+  }
+
   const emailId = req.params.id;
   const userName = req.session.fullName;
+
   try {
-    // Fetch email details by ID
     const emailDetailQuery = `
             SELECT emails.*, users.full_name AS sender_name
             FROM emails
@@ -108,7 +116,6 @@ router.get('/email/:id', async (req, res) => {
     const [email] = await database.query(emailDetailQuery, [emailId]);
 
     if (email.length > 0) {
-      // Render the email detail page with email data
       res.render('emailDetail', { email: email[0], userName });
     } else {
       res.status(404).send('Không tìm thấy email!');
@@ -119,19 +126,15 @@ router.get('/email/:id', async (req, res) => {
   }
 });
 
-//api xóa hộp thư
-
+//api xóa hộp thư đi(path params)
 router.delete('/api/emails/sender/:id', async (req, res) => {
-  // Ensure the user is logged in
   if (!req.session.userId) {
-    return res.status(401).json({ message: 'Vui lòng hãy đăng nhập tài khoản' });
+    return res.status(403).render('denied', { message: 'Vui lòng đăng nhập' });
   }
-
   const userId = req.session.userId;
   const emailId = req.params.id;
 
   try {
-    // Check if the email belongs to the logged-in user
     const checkEmailQuery = `SELECT * FROM emails WHERE id = ? AND sender_id = ?`;
     const [[email]] = await database.query(checkEmailQuery, [emailId, userId]);
 
@@ -148,23 +151,20 @@ router.delete('/api/emails/sender/:id', async (req, res) => {
   }
 });
 
+//api xóa hộp thư đến(path params)
 router.delete('/api/emails/receiver/:id', async (req, res) => {
-  // Ensure the user is logged in
   if (!req.session.userId) {
-    return res.status(401).json({ message: 'Vui lòng hãy đăng nhập tài khoản!' });
+    return res.status(403).render('denied', { message: 'Vui lòng đăng nhập' });
   }
-
   const userId = req.session.userId;
   const emailId = req.params.id;
 
   try {
-    // Check if the email belongs to the logged-in user
     const checkEmailQuery = `SELECT * FROM emails WHERE id = ? AND receiver_id = ?`;
     const [[email]] = await database.query(checkEmailQuery, [emailId, userId]);
     if (!email) {
       return res.status(404).json({ message: 'Email not found or not authorized to delete' });
     }
-    //update status_receiver
     const updateEmailQuery = 'UPDATE emails SET status_receiver = 0 WHERE id = ?'
     await database.query(updateEmailQuery, [emailId]);
     //
@@ -175,13 +175,12 @@ router.delete('/api/emails/receiver/:id', async (req, res) => {
   }
 });
 
-//compose
-// GET route for composing email
+//api get soạn tin
 router.get('/compose', async (req, res) => {
   const userName = req.session.fullName;
 
   if (!req.session.userId) {
-    return res.redirect('/login');
+    return res.status(403).render('denied', { message: 'Vui lòng đăng nhập' });
   }
 
   try {
@@ -193,7 +192,7 @@ router.get('/compose', async (req, res) => {
   }
 });
 
-// POST route to compose and send email with file upload
+//api soạn tin nhắn
 router.post('/email/compose', upload.single('attachment'), async (req, res) => {
   const userName = req.session.fullName;
   if (!req.session.userId) {
@@ -216,7 +215,7 @@ router.post('/email/compose', upload.single('attachment'), async (req, res) => {
     }
 
     const receiverId = receiver.id;
-    const attachmentPath = req.file ? req.file.path : null; // Path to uploaded file
+    const attachmentPath = req.file ? req.file.path : null;
 
     const insertEmailQuery = `
       INSERT INTO emails (sender_id, receiver_id, subject, message, sent_at, status_sender, status_receiver, attachment)

@@ -1,0 +1,2 @@
+curl --location 'https://test-chothuoctot.medlink.vn/api/v2/product.product/get_detail_product_product?product_id=5990&vendor_code=4125' \
+--header 'Cookie: session_id=33a0cb034eaedc40d627d38bb94015d8d27b5407'
